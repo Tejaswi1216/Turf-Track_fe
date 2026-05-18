@@ -186,13 +186,3 @@ Deployment targets:
 - Frontend can be hosted as a static Vite app (e.g., Netlify)
 - Backend API is consumed through `VITE_API_URL` and API rewrite rules
 
----
-
-## Notes for Reviewers / Recruiters
-
-If you are reviewing this for engineering fit, key areas to inspect:
-- `src/App.tsx` (routing and role-based protection)
-- `src/hooks/useAuth.tsx` (auth lifecycle and OTP flows)
-- `src/pages/CheckoutPage.tsx` + `src/lib/razorpay.ts` (payment integration)
-- `src/pages/admin/*` and `src/pages/admin/SuperAdminDashboard.tsx` (analytics/admin UX)
-- `tests/` (automated test coverage approach)
