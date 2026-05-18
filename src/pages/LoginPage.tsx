@@ -44,7 +44,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium">Email</label>
-            <Input {...register('email')} />
+            <Input type="email" {...register('email')} />
             {errors.email && <p className="text-sm text-destructive mt-1">{errors.email.message}</p>}
           </div>
           <div>

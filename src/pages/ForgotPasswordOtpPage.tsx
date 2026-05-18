@@ -9,7 +9,6 @@ import { useAuth } from "@/hooks/useAuth";
 type ForgotPasswordData = {
   transactionId: string;
   email: string;
-  devCode?: string;
 };
 
 export default function ForgotPasswordOtpPage() {

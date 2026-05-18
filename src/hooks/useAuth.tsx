@@ -4,13 +4,13 @@ import { AuthState, AuthUser, clearAuth, loadAuth, saveAuth, apiRequest } from '
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, phone: string, password: string, role?: 'user' | 'admin') => Promise<void>;
-  registerStart: (name: string, email: string, phone: string, password: string, role?: 'user' | 'admin') => Promise<{ transactionId: string; email: string; devCode?: string }>;
+  registerStart: (name: string, email: string, phone: string, password: string, role?: 'user' | 'admin') => Promise<{ transactionId: string; email: string }>;
   verifyRegistration: (transactionId: string, code: string) => Promise<void>;
-  resendRegistrationOtp: (transactionId: string) => Promise<{ devCode?: string }>;
-  forgotPassword: (email: string) => Promise<{ transactionId: string; email: string; devCode?: string }>;
+  resendRegistrationOtp: (transactionId: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ transactionId: string; email: string }>;
   verifyForgotPasswordOtp: (transactionId: string, code: string) => Promise<{ resetToken: string; email: string }>;
   resetPassword: (resetToken: string, newPassword: string) => Promise<void>;
-  resendForgotPasswordOtp: (transactionId: string) => Promise<{ devCode?: string }>;
+  resendForgotPasswordOtp: (transactionId: string) => Promise<void>;
   logout: () => void;
   refreshMe: () => Promise<void>;
 }
@@ -77,12 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function registerStart(name: string, email: string, phone: string, password: string, role: 'user' | 'admin' = 'user') {
-    const data = await apiRequest<{ transactionId: string; email: string; expiresInSeconds: number; devCode?: string }>('/api/auth/register/start', {
+    const data = await apiRequest<{ transactionId: string; email: string; expiresInSeconds: number }>('/api/auth/register/start', {
       method: 'POST',
       body: JSON.stringify({ name, email, phone, password, role })
     });
     // Do not set auth state yet; wait for OTP verification
-    return { transactionId: data.transactionId, email: data.email, devCode: (data as any).devCode };
+    return { transactionId: data.transactionId, email: data.email };
   }
 
   async function verifyRegistration(transactionId: string, code: string) {
@@ -94,19 +94,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function resendRegistrationOtp(transactionId: string) {
-    const data = await apiRequest<{ expiresInSeconds: number; devCode?: string }>('/api/auth/register/resend', {
+    await apiRequest<{ expiresInSeconds: number }>('/api/auth/register/resend', {
       method: 'POST',
       body: JSON.stringify({ transactionId })
     });
-    return { devCode: (data as any).devCode };
   }
 
   async function forgotPassword(email: string) {
-    const data = await apiRequest<{ transactionId: string; email: string; expiresInSeconds: number; devCode?: string }>('/api/auth/forgot-password', {
+    const data = await apiRequest<{ transactionId: string; email: string; expiresInSeconds: number }>('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify({ email })
     });
-    return { transactionId: data.transactionId, email: data.email, devCode: (data as any).devCode };
+    return { transactionId: data.transactionId, email: data.email };
   }
 
   async function verifyForgotPasswordOtp(transactionId: string, code: string) {
@@ -125,11 +124,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function resendForgotPasswordOtp(transactionId: string) {
-    const data = await apiRequest<{ expiresInSeconds: number; devCode?: string }>('/api/auth/forgot-password/resend', {
+    await apiRequest<{ expiresInSeconds: number }>('/api/auth/forgot-password/resend', {
       method: 'POST',
       body: JSON.stringify({ transactionId })
     });
-    return { devCode: (data as any).devCode };
   }
 
   function logout() {

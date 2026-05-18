@@ -32,8 +32,7 @@ export default function ForgotPasswordPage() {
       // Store the transaction details for the next step
       sessionStorage.setItem("forgotPasswordData", JSON.stringify({
         transactionId: result.transactionId,
-        email: result.email,
-        devCode: result.devCode
+        email: result.email
       }));
 
       toast({ 

@@ -57,8 +57,8 @@ export default function RegisterPage() {
         setCheckingEmail(true);
         const q = encodeURIComponent(debouncedEmail.trim());
         // Use apiRequest helper so production uses VITE_API_URL (not relative /api which only works with dev proxy)
-  const data = await apiRequest<{ available?: boolean }>(`/api/auth/email-available?email=${q}`, { method: 'GET', signal: ctrl.signal }).catch(() => ({}));
-        if (!ignore) setEmailAvailable(Boolean(data?.available));
+        const data = await apiRequest<{ available?: boolean }>(`/api/auth/email-available?email=${q}`, { method: 'GET', signal: ctrl.signal }).catch(() => ({}));
+        if (!ignore) setEmailAvailable(Boolean((data as { available?: boolean }).available));
       } catch {
         if (!ignore) setEmailAvailable(null);
       } finally {
@@ -73,6 +73,11 @@ export default function RegisterPage() {
   }, [debouncedEmail, emailFormatOk]);
 
   async function onSubmit(values: FormData) {
+    if (emailFormatOk && emailAvailable === false) {
+      toast({ title: "Registration failed", description: "Account is already registered", variant: "destructive" });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const data = await apiRequest<{ transactionId?: string; email?: string }>("/api/auth/register/start", {
@@ -114,7 +119,7 @@ export default function RegisterPage() {
           <div>
             <label className="mb-1 block text-sm font-medium">Email</label>
             <div className="relative">
-              <Input {...register("email")} className={
+              <Input type="email" {...register("email")} className={
                 debouncedEmail && !emailFormatOk ? "pr-9 border-red-500" :
                 emailAvailable === true ? "pr-9 border-green-500" :
                 emailAvailable === false ? "pr-9 border-red-500" : undefined
@@ -156,7 +161,9 @@ export default function RegisterPage() {
           <input {...register("role")} type="hidden" value="user" />
 
           {(() => {
-            const isSignupDisabled = submitting || !emailFormatOk || emailAvailable === false;
+            // Allow the form to be submitted so Playwright can exercise validation
+            // and the server-side flow. Keep the button disabled only while submitting.
+            const isSignupDisabled = submitting || (emailFormatOk && emailAvailable === false);
             return (
               <Button type="submit" variant="hero" className="w-full" disabled={isSignupDisabled}>
                 {submitting ? "Sending OTP..." : "Create account"}

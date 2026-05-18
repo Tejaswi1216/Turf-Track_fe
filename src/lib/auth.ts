@@ -53,7 +53,14 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}, tok
   
   const res = await fetch(fullUrl, { ...options, headers });
   if (!res.ok) {
-    const msg = await res.text().catch(() => 'Request failed');
+    const raw = await res.text().catch(() => '');
+    let msg = raw;
+    try {
+      const parsed = raw ? JSON.parse(raw) : null;
+      msg = parsed?.message || parsed?.error || raw;
+    } catch {
+      // keep raw text
+    }
     throw new Error(msg || `HTTP ${res.status}`);
   }
   return res.json();

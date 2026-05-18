@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/auth";
 
 type Pending = {
   name: string;
@@ -48,22 +49,16 @@ export default function OtpVerifyPage() {
       const payload: Record<string, string> = { otp, email: pending.email };
       if (pending.transactionId) payload.transactionId = pending.transactionId;
 
-      const res = await fetch("/api/auth/register/verify", {
+      const data = await apiRequest<{ message?: string }>("/api/auth/register/verify", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        toast({ title: "Verification failed", description: data?.message || "Try again", variant: "destructive" });
-        return;
-      }
 
       sessionStorage.removeItem("pendingRegistration");
       toast({ title: "Account created", description: "You can now log in." });
       navigate("/login");
-    } catch {
-      toast({ title: "Verification failed", description: "Please try again", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Verification failed", description: err instanceof Error ? err.message : "Please try again", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -76,19 +71,13 @@ export default function OtpVerifyPage() {
       const payload: Record<string, string> = { email: pending.email };
       if (pending.transactionId) payload.transactionId = pending.transactionId;
 
-      const res = await fetch("/api/auth/register/resend", {
+      const data = await apiRequest<{ message?: string }>("/api/auth/register/resend", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        toast({ title: "Resend failed", description: data?.message || "Try again", variant: "destructive" });
-        return;
-      }
       toast({ title: "OTP resent", description: "Check your email." });
-    } catch {
-      toast({ title: "Resend failed", description: "Please try again", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Resend failed", description: err instanceof Error ? err.message : "Please try again", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -106,7 +95,6 @@ export default function OtpVerifyPage() {
       <div className="mx-auto max-w-md space-y-6">
         <h1 className="text-2xl font-semibold">Verify your account</h1>
         <p className="text-sm">An OTP was sent to <strong>{pending.email}</strong>. Enter it below to complete registration.</p>
-
         <form onSubmit={verifyOtp} className="space-y-4">
           <div>
             <label className="mb-1 block text-sm font-medium">OTP</label>
