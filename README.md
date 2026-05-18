@@ -101,7 +101,7 @@ tests/
 
 ### 1) Prerequisites
 
-- **Node.js 18+** (LTS recommended)
+- **Node.js 20+** (LTS recommended)
 - **npm 9+**
 
 ### 2) Install dependencies
