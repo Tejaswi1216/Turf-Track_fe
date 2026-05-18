@@ -50,7 +50,7 @@ This repository demonstrates:
 
 ### Quality & Testing
 - **ESLint**
-- **Playwright** (unit + integration suites in this repo)
+- **Playwright** (browser-based automated test suites in this repo)
 - **GitHub Actions** (`.github/workflows/playwright.yml`)
 
 ---
@@ -91,8 +91,8 @@ src/
   pages/             # Route-level pages (user/admin/superadmin)
   types/             # Shared TypeScript types
 tests/
-  unit/              # UI/component behavior tests (Playwright)
-  integration/       # Feature/integration tests (Playwright)
+  unit/              # Lighter browser tests (naming retained from repo convention)
+  integration/       # Broader workflow/integration browser tests
 ```
 
 ---
@@ -137,8 +137,8 @@ Default local app URL: `http://localhost:8080`
 - `npm run build` – create production build
 - `npm run preview` – preview production build locally
 - `npm run lint` – run ESLint
-- `npm run test:unit` – run Playwright unit suite
-- `npm run test:integration` – run Playwright integration suite
+- `npm run test:unit` – run the lighter Playwright browser suite (`tests/unit`)
+- `npm run test:integration` – run the broader Playwright workflow suite (`tests/integration`)
 - `npm run test:all` – run all Playwright tests
 - `npm run test:report:html` – generate HTML test report
 
