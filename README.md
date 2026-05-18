@@ -91,8 +91,8 @@ src/
   pages/             # Route-level pages (user/admin/superadmin)
   types/             # Shared TypeScript types
 tests/
-  unit/              # Lighter browser tests (naming retained from repo convention)
-  integration/       # Broader workflow/integration browser tests
+  unit/              # Fast browser tests focused on isolated UI pieces (buttons/forms/cards)
+  integration/       # Page and workflow-level browser tests across app routes/APIs
 ```
 
 ---
@@ -141,6 +141,8 @@ Default local app URL: `http://localhost:8080`
 - `npm run test:integration` – run the broader Playwright workflow suite (`tests/integration`)
 - `npm run test:all` – run all Playwright tests
 - `npm run test:report:html` – generate HTML test report
+
+> Note: script names keep the repository’s existing convention (`test:unit` / `tests/unit`), but these are still browser-driven Playwright tests rather than pure in-process unit tests.
 
 ---
 
